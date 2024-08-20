@@ -8,6 +8,30 @@ mid_font = ImageFont.truetype(font_path, 26)
 black = (0, 0, 0)
 grey = (128, 128, 128)
 
+room_order = [
+    'Kitchen',
+    'Living room',
+    'Bedroom',
+    "Štěpa's room",
+    "Kaja's room",
+    "Anička's room",
+    'Bathroom',
+    'Office',
+    'Outdoor',
+]
+
+def draw_netatmo_dashboard(image, y, data):
+    module_index = {}
+    for i, module in enumerate(data):
+        module_index[module['module_name']] = i
+
+    tile_width = module_tile_width(image)
+    tile_count = len(room_order)
+    gap = (image.width - tile_width * tile_count) // (tile_count + 1)
+
+    for i, room in enumerate(room_order):
+        draw_module_data(image, (gap + i * (tile_width + gap), y), data[module_index[room]])
+
 
 def draw_module_data(image, position, module_data):
     draw = ImageDraw.Draw(image)
