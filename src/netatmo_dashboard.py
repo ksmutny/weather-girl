@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 
 
-font_path = "C:/Windows/Fonts/segoeui.ttf"
+font_path = "font/segoeui.ttf"
 small_font = ImageFont.truetype(font_path, 16)
 mid_font = ImageFont.truetype(font_path, 26)
 

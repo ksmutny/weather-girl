@@ -1,4 +1,5 @@
 __pycache__
+/font
 .env
 token.json
 data_*.json
