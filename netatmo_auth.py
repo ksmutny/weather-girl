@@ -1,52 +1,28 @@
-from flask import Flask, redirect, request, url_for
-from dotenv import load_dotenv
-import json
-import os
-import requests
+from flask import Flask, redirect, request
 import webbrowser
+
+from netatmo_auth_token import AUTHORIZATION_URL, get_netatmo_token, save_netatmo_token
 
 
 app = Flask(__name__)
 app.secret_key = 'super secret'
-
-load_dotenv()
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-
-AUTHORIZATION_BASE_URL = 'https://api.netatmo.com/oauth2/authorize'
-REDIRECT_URI = 'http://localhost:5000/callback'
-TOKEN_URL = 'https://api.netatmo.com/oauth2/token'
 
 
 @app.route('/')
 def index():
     return 'Welcome to the Netatmo Authorization App. <a href="/login">Login</a>'
 
-
 @app.route('/login')
 def login():
-    authorization_url = f'{AUTHORIZATION_BASE_URL}?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope=read_station'
-    return redirect(authorization_url)
+    return redirect(AUTHORIZATION_URL)
 
 
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
-    token_response = requests.post(
-        TOKEN_URL,
-        data={
-            'grant_type': 'authorization_code',
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
-            'code': code,
-            'redirect_uri': REDIRECT_URI
-        }
-    )
-    token_data = token_response.json()
-
-    # Save token data to a file
-    with open('token.json', 'w') as file:
-        json.dump(token_data, file)
+    token_data = get_netatmo_token(code)
+    save_netatmo_token(token_data)
+    return 'Token retrieved and saved. You can close this window.'
 
 
 if __name__ == '__main__':
