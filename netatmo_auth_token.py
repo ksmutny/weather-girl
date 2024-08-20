@@ -9,9 +9,10 @@ CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 TOKEN_URL = 'https://api.netatmo.com/oauth2/token'
 AUTHORIZATION_BASE_URL = 'https://api.netatmo.com/oauth2/authorize'
-REDIRECT_URI = 'http://localhost:5000/callback'
 
-AUTHORIZATION_URL = f'{AUTHORIZATION_BASE_URL}?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope=read_station'
+
+def authorization_url(redirect_uri):
+    return f'{AUTHORIZATION_BASE_URL}?client_id={CLIENT_ID}&redirect_uri={redirect_uri}&scope=read_station'
 
 
 def read_netatmo_token():
@@ -24,7 +25,7 @@ def save_netatmo_token(token_data):
         json.dump(token_data, file)
 
 
-def get_netatmo_token(authorization_code):
+def get_netatmo_token(authorization_code, redirect_uri):
     token_response = requests.post(
         TOKEN_URL,
         data={
@@ -32,7 +33,7 @@ def get_netatmo_token(authorization_code):
             'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET,
             'code': authorization_code,
-            'redirect_uri': REDIRECT_URI
+            'redirect_uri': redirect_uri
         }
     )
     return token_response.json()
