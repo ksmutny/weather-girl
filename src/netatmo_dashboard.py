@@ -3,42 +3,48 @@ from PIL import Image, ImageDraw, ImageFont
 
 font_path = "C:/Windows/Fonts/segoeui.ttf"
 small_font = ImageFont.truetype(font_path, 16)
-mid_font = ImageFont.truetype(font_path, 22)
+mid_font = ImageFont.truetype(font_path, 26)
+
+black = (0, 0, 0)
+grey = (128, 128, 128)
 
 
 def draw_module_data(image, position, module_data):
     draw = ImageDraw.Draw(image)
     (x, y) = position
+    tile_width = module_tile_width(image)
 
-    def draw_data(position, icon_name, text):
-        (x, y) = position
-        paste_icon((x, y), get_icon(icon_name))
-        draw.text((x + 30, y), text, font=small_font, fill=(0, 0, 0))
-
-    def draw_temperature(position, temperature):
-        (x, y) = position
-        draw.text((x, y), str(temperature) + ' ºC', font=mid_font, fill=black)
-
-    def draw_co2(position, co2_level):
-        if co2_level == None: return
-        (x, y) = position
-        paste_icon((x, y), get_co2_icon(co2_level))
-        draw.text((x + 30, y), str(co2_level), font=small_font, fill=black)
+    def draw_room_icon(room_name):
+        paste_icon((x + (tile_width - 60) // 2, y), get_room_icon(room_name))
 
     def paste_icon(position, icon):
         if (icon == None): return
         image.paste(icon, position, icon)
 
-    black = (0, 0, 0)
+    def print_d(delta, key, unit = '', font = small_font, icon = None):
+        if module_data[key] == None: return
 
-    paste_icon((x + 15, y), get_room_icon(module_data['module_name']))
+        icon = get_icon(key) if icon == None else icon
+        icon_width = 0 if icon == None else 30
+        paste_icon((x, y + delta), icon)
 
-    draw_temperature((x, y + 110), module_data['temperature'])
-    draw_co2((x, y + 160), module_data['co2'])
-    draw_data((x, y + 190), 'humidity', str(module_data['humidity']) + '%')
-    if module_data['pressure'] != None:
-        draw_data((x, y + 220), 'pressure', str(module_data['pressure']) + ' hPa')
+        text = str(module_data[key])
+        text_width = draw.textbbox((0, 0), text, font=font)[2]
+        draw.text((x + icon_width, y + delta), text, font=font, fill=black)
+        draw.text((x + icon_width + text_width, y + delta), unit, font=font, fill=grey)
 
+    draw_room_icon(module_data['module_name'])
+
+    print_d(110, 'temperature', ' ºC', font = mid_font)
+    print_d(160, 'co2', icon = get_co2_icon(module_data['co2']))
+    print_d(190, 'humidity', '%')
+    print_d(220, 'pressure', ' hPa')
+
+
+
+def module_tile_width(image):
+    draw = ImageDraw.Draw(image)
+    return draw.textbbox((0, 0), '88.8 ºC', font=mid_font)[2]
 
 icon_cache = {}
 
@@ -63,6 +69,7 @@ co2_icons = {
 }
 
 def get_co2_icon(co2_level):
+    if co2_level == None: return None
     for level in co2_icons:
         if co2_level > level:
             icon_name = co2_icons[level]
@@ -74,4 +81,7 @@ def get_icon(icon_name):
     return icon_cache[icon_name]
 
 def load_icon(icon_name):
-    return Image.open(f'icons/{icon_name}.png')
+    try:
+        return Image.open(f'icons/{icon_name}.png')
+    except FileNotFoundError:
+        return None
