@@ -1,6 +1,6 @@
-import json
 import requests
 
+from fs_json import save_json
 from netatmo_auth_token import read_netatmo_token
 
 
@@ -40,6 +40,4 @@ def extract_module_data(module_data):
         'battery_percent': module_data.get('battery_percent', None),
     }
 
-
-with open('data_netatmo.json', 'w') as file:
-    json.dump(get_station_data(), file)
+save_json('data_netatmo.json', get_station_data())

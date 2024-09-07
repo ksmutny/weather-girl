@@ -1,12 +1,11 @@
 from PIL import Image
-import json
+from fs_json import read_json
 
 from netatmo_dashboard import draw_netatmo_dashboard
 
 image = Image.new("RGB", (1200, 825), (255, 255, 255))
 
-with open('data_netatmo.json', 'r') as file:
-    data = json.load(file)
+data = read_json('data_netatmo.json')
 
 draw_netatmo_dashboard(image, 500, data)
 

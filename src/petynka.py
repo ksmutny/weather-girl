@@ -1,6 +1,6 @@
-import json
 import requests
 from bs4 import BeautifulSoup
+from fs_json import save_json
 
 def fetch_html_content(url):
     response = requests.get(url)
@@ -28,5 +28,4 @@ data = {
     'visitor_count': visitor_count
 }
 
-with open('data_petynka.json', 'w') as file:
-    json.dump(data, file)
+save_json('data_petynka.json', data)

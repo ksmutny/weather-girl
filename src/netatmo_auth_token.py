@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-import json
+from fs_json import read_json, save_json
 import os
 import requests
 
@@ -16,13 +16,11 @@ def authorization_url(redirect_uri):
 
 
 def read_netatmo_token():
-    with open('token.json', 'r') as file:
-        return json.load(file)
+    return read_json('token.json')
 
 
 def save_netatmo_token(token_data):
-    with open('token.json', 'w') as file:
-        json.dump(token_data, file)
+    save_json('token.json', token_data)
 
 
 def get_netatmo_token(authorization_code, redirect_uri):
