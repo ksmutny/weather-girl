@@ -1,10 +1,11 @@
+import json
 import requests
 from bs4 import BeautifulSoup
 
 def fetch_html_content(url):
     response = requests.get(url)
     response.raise_for_status()  # Ensure the request was successful
-    
+
     return response.text
 
 def data_cell(n):
@@ -21,6 +22,11 @@ water_temp = data_cell(1)
 air_temp = data_cell(2)
 visitor_count = data_cell(3)
 
-print(f'Water temperature: {water_temp}')
-print(f'Air temperature: {air_temp}')
-print(f'Visitor count: {visitor_count}')
+data = {
+    'water_temp': water_temp,
+    'air_temp': air_temp,
+    'visitor_count': visitor_count
+}
+
+with open('data_petynka.json', 'w') as file:
+    json.dump(data, file)
