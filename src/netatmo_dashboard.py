@@ -1,3 +1,4 @@
+from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -32,6 +33,9 @@ def draw_netatmo_dashboard(image, y, data):
 
     for i, room in enumerate(room_order):
         draw_module_data(image, (gap + i * (tile_width + gap), y), tile_width, data[module_index[room]])
+
+    updated = datetime.now().strftime('%d.%m. %H:%M')
+    draw.text((image.width - 100, y + 290), updated, font=small_font, fill=grey)
 
 
 def draw_module_data(image, position, tile_width, module_data):
