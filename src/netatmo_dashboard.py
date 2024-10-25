@@ -25,18 +25,18 @@ def draw_netatmo_dashboard(image, y, data):
     for i, module in enumerate(data):
         module_index[module['module_name']] = i
 
-    tile_width = module_tile_width(image)
+    draw = ImageDraw.Draw(image)
+    tile_width = module_tile_width(draw)
     tile_count = len(room_order)
     gap = (image.width - tile_width * tile_count) // (tile_count + 1)
 
     for i, room in enumerate(room_order):
-        draw_module_data(image, (gap + i * (tile_width + gap), y), data[module_index[room]])
+        draw_module_data(image, (gap + i * (tile_width + gap), y), tile_width, data[module_index[room]])
 
 
-def draw_module_data(image, position, module_data):
-    draw = ImageDraw.Draw(image)
+def draw_module_data(image, position, tile_width, module_data):
     (x, y) = position
-    tile_width = module_tile_width(image)
+    draw = ImageDraw.Draw(image)
 
     def draw_room_icon(room_name):
         paste_icon((x + (tile_width - 60) // 2, y), get_room_icon(room_name))
@@ -66,8 +66,7 @@ def draw_module_data(image, position, module_data):
 
 
 
-def module_tile_width(image):
-    draw = ImageDraw.Draw(image)
+def module_tile_width(draw):
     return draw.textbbox((0, 0), '88.8 ºC', font=mid_font)[2]
 
 icon_cache = {}
